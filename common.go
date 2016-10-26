@@ -246,7 +246,7 @@ func (pkt *Packet) WriteUint64(elem uint64) {
 }
 
 func (pkt *Packet) WriteInt64(elem int64) {
-	pkt.WriteInt64(uint64(elem))
+	pkt.WriteUint64(uint64(elem))
 }
 
 func (pkt *Packet) WriteFloat32(elem float32) {
