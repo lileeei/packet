@@ -2,34 +2,17 @@ package packet
 
 import (
 	"errors"
-	"strconv"
 	"math"
 )
 
-const (
-	INITLEN = 128
-)
-
-
-//--------------------------------------------------------------------------分割线
 type Packet struct {
 	pos  int32  //偏移量
 	Data []byte //数据
 }
 
-func (pkt *Packet)Pos() int32 {
-	return pkt.pos
-}
-
-func (pkt *Packet)Seek(left int32) bool {
-	if pkt.pos + left >= len(pkt.Data) {
-		return false
-	}
-	
-	pkt.pos += left
-	
-	return true
-}
+const (
+	INITLEN = 128
+)
 
 func NewPlayLoad() *Packet {
 	return &Packet{
@@ -176,14 +159,20 @@ func (pkt *Packet) ReadFloat32() (value float32, err error) {
 	return
 }
 
-func (pkt *Packet) ReadString(v ...int) (value float64, err error) {
-	data, err := pkt.ReadUint64()
+func (pkt *Packet) ReadString(v ...int) (value string, err error) {
+	len, err := pkt.ReadUint16()
 	if err != nil {
-		err = errors.New("read float64 error")
+		err = errors.New("read string len error")
 		return
 	}
 
-	value = math.Float32frombits(data)
+	bytes, err:= pkt.ReadByte(len)
+	if err != nil {
+		err = errors.New("read string error")
+		return
+	}
+
+	value = string(bytes)
 
 	return
 }
@@ -257,6 +246,8 @@ func (pkt *Packet) WriteFloat64(elem float64) {
 	pkt.WriteUint64(math.Float64bits(elem))
 }
 
-func (playload *Packet) WriteString(elem string) {
-	playload.WriteBytes([]byte(elem))
+func (pkt *Packet) WriteString(elem string) {
+	len := len(elem)
+	pkt.WriteUint16(uint16(len))
+	pkt.WriteBytes([]byte(elem))
 }
