@@ -14,6 +14,17 @@ const (
 	INITLEN = 128
 )
 
+func (pkt *Packet)Pos() int32 {
+	
+	return pkt.pos
+}
+
+func (pkt *Packet) Seek(offset int32) bool {
+	//todo
+	
+	return true
+}
+
 func NewPlayLoad() *Packet {
 	return &Packet{
 		pos:  0,
