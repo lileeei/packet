@@ -177,7 +177,7 @@ func (pkt *Packet) ReadString(v ...int) (value string, err error) {
 		return
 	}
 	
-	if len <= 125 {
+	if len <= 253 {
 		bytes, err:= pkt.ReadByte(len)
 		
 		if err != nil {
@@ -190,7 +190,7 @@ func (pkt *Packet) ReadString(v ...int) (value string, err error) {
 		return
 	}
 	
-	if len == 126 {
+	if len == 254 {
 		strLen, err:= pkt.ReadUint16(len)
 		if err != nil {
 			err = errors.New("read string error")
@@ -208,7 +208,7 @@ func (pkt *Packet) ReadString(v ...int) (value string, err error) {
 		return
 	} 
 
-	if len == 127 {
+	if len == 255 {
 		strLen, err:= pkt.ReadUint32(len)
 		if err != nil {
 			err = errors.New("read string error")
@@ -299,13 +299,13 @@ func (pkt *Packet) WriteFloat64(elem float64) {
 
 func (pkt *Packet) WriteString(elem string) {
 	strLen := len(elem)
-	if strLen <= 125 {
+	if strLen <= 253 {
 		pkt.WriteUint8(uint8(strLen))
 	} else if strLen < 2^16 {
-		pkt.WriteUint8(uint8(126))
+		pkt.WriteUint8(uint8(254))
 		pkt.WriteUint16(uint16(strLen))
 	} else {
-		pkt.WriteUint8(uint8(127))
+		pkt.WriteUint8(uint8(255))
 		pkt.WriteUint32(uint32(strLen))
 	}
 	
